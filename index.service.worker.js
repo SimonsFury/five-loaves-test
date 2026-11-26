@@ -17,7 +17,7 @@ const ENSURE_CROSSORIGIN_ISOLATION_HEADERS = false;
 const CACHED_FILES = ["index.html","index.js","index.offline.html","index.icon.png","index.apple-touch-icon.png","index.audio.worklet.js","index.audio.position.worklet.js"];
 // Files that we might not want the user to preload, and will only be cached on first load.
 /** @type {string[]} */
-const CACHEABLE_FILES = ["index.wasm","game-b7d59ed2194c164d.pck", "music/finale-7b9f5fc5f82d.ogg", "music/market-1d88dfc6eedb.ogg", "music/table-a81ab9cb9ff9.ogg", "music/title-efd4692106ad.ogg"];
+const CACHEABLE_FILES = ["index.wasm","game-1ea69f1e8843abf0.pck", "music/finale-7b9f5fc5f82d.ogg", "music/market-1d88dfc6eedb.ogg", "music/table-a81ab9cb9ff9.ogg", "music/title-efd4692106ad.ogg"];
 const FULL_CACHE = CACHED_FILES.concat(CACHEABLE_FILES);
 
 self.addEventListener('install', (event) => {
@@ -167,5 +167,5 @@ self.addEventListener('message', (event) => {
 
 self.addEventListener('activate', (event) => {
 	event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.keys().then((reqs) => Promise.all(
-		reqs.filter((r) => /game-[0-9a-f]+\.pck$/.test(r.url) && !r.url.endsWith("game-b7d59ed2194c164d.pck")).map((r) => cache.delete(r))))));
+		reqs.filter((r) => /game-[0-9a-f]+\.pck$/.test(r.url) && !r.url.endsWith("game-1ea69f1e8843abf0.pck")).map((r) => cache.delete(r))))));
 });
