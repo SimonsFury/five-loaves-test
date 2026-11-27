@@ -40,19 +40,17 @@ body { color: white; background-color: black; overflow: hidden; touch-action: no
 /* a loaf or a fish: lands from above (it starts big, near the eye, and settles into the basket) */
 .fl-piece { left: 0; top: 0; width: 0; height: 0; --sx: 1; }
 .fl-piece.flip { --sx: -1; }  /* the second fish faces the other way (mirrored inside the transform, so it stays in place) */
-.fl-piece img, .fl-piece i { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%) rotate(var(--r)) scale(var(--sx), 1); opacity: 0; }
-.fl-piece img { width: var(--w); }
-.fl-piece i { width: var(--w); height: var(--w); border-radius: 50%; background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0)); }
-.fl-piece.fish i { height: calc(var(--w) * 0.6); }
+.fl-piece img { position: absolute; left: 0; top: 0; width: var(--w); transform: translate(-50%, -50%) rotate(var(--r)) scale(var(--sx), 1); opacity: 0; }
 .fl-piece.in img { animation: fl-drop 0.62s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
-.fl-piece.in i { animation: fl-shade 0.62s ease-out forwards; }
+/* the shadow follows the piece's own shape; it starts far and soft (high above) and ends close */
 @keyframes fl-drop {
-	0% { opacity: 0; transform: translate(-50%, -64%) rotate(calc(var(--r) - 14deg)) scale(calc(1.85 * var(--sx)), 1.85); filter: blur(3px); }
-	45% { opacity: 1; filter: blur(0); }
+	0% { opacity: 0; transform: translate(-50%, -64%) rotate(calc(var(--r) - 14deg)) scale(calc(1.85 * var(--sx)), 1.85);
+		filter: blur(3px) drop-shadow(calc(30 * var(--u)) calc(60 * var(--u)) calc(26 * var(--u)) rgba(20, 10, 4, 0)); }
+	45% { opacity: 1; filter: blur(0) drop-shadow(calc(14 * var(--u)) calc(28 * var(--u)) calc(16 * var(--u)) rgba(20, 10, 4, 0.35)); }
 	72% { transform: translate(-50%, -50%) rotate(var(--r)) scale(calc(0.95 * var(--sx)), 0.95); }
-	100% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r)) scale(var(--sx), 1); }
+	100% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r)) scale(var(--sx), 1);
+		filter: blur(0) drop-shadow(calc(6 * var(--u)) calc(12 * var(--u)) calc(9 * var(--u)) rgba(20, 10, 4, 0.7)); }
 }
-@keyframes fl-shade { 0% { opacity: 0; transform: translate(-46%, -40%) scale(1.5); } 100% { opacity: 0.85; transform: translate(-46%, -42%) scale(1); } }
 /* a puff of flour where a loaf lands */
 .fl-flour { position: absolute; width: calc(10 * var(--u)); height: calc(10 * var(--u)); margin: calc(-5 * var(--u)); border-radius: 50%;
 	background: rgba(255, 244, 222, 0.85); animation: fl-flour 0.7s ease-out forwards; }
@@ -73,7 +71,8 @@ body { color: white; background-color: black; overflow: hidden; touch-action: no
 #fl.ready #fl-col > img.fl, #fl.ready #fl-basket { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
 	.fl-piece.in img { animation: fl-fade 0.3s ease forwards; }
-	@keyframes fl-fade { from { opacity: 0; } to { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r)) scale(var(--sx), 1); } }
+	@keyframes fl-fade { from { opacity: 0; } to { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r)) scale(var(--sx), 1);
+		filter: drop-shadow(calc(6 * var(--u)) calc(12 * var(--u)) calc(9 * var(--u)) rgba(20, 10, 4, 0.7)); } }
 	.fl-flour, .fl-mote { display: none; }
 }
 #status-notice {
@@ -156,15 +155,20 @@ body { color: white; background-color: black; overflow: hidden; touch-action: no
 		col.appendChild(m);
 	}
 
-	// five loaves in a ring inside the basket (top first, clockwise), two fish head to tail on them
+	// five loaves in a ring inside the basket (top first, clockwise), two fish head to tail on them.
+	// 0.25.1 (Simon: place the loaves better): a little smaller and further apart, each a touch
+	// uneven like real loaves ([angle, ring, size]), and each casts a shadow on what lies below
 	const S = 700;
+	const UNEVEN = [[4, 0.02, 0.03], [-3, -0.03, -0.04], [5, 0.03, 0.02], [-4, -0.01, -0.03], [2, 0, 0.04]];
 	const pieces = [];
 	for (let k = 0; k < 5; k++) {
-		const th = (-90 + 72 * k) * Math.PI / 180;
-		pieces.push({src: 'loader/loaf.webp', x: S / 2 + Math.cos(th) * S * 0.205, y: S / 2 + Math.sin(th) * S * 0.205, w: S * 0.33, r: -18 + 9 * k, loaf: true});
+		const [da, dr, ds] = UNEVEN[k];
+		const th = (-90 + 72 * k + da) * Math.PI / 180;
+		const ring = S * 0.235 * (1 + dr);
+		pieces.push({src: 'loader/loaf.webp', x: S / 2 + Math.cos(th) * ring, y: S / 2 + Math.sin(th) * ring, w: S * 0.285 * (1 + ds), r: -18 + 9 * k, loaf: true});
 	}
-	pieces.push({src: 'loader/fish.webp', x: S / 2, y: S / 2 - S * 0.07, w: S * 0.46, r: 8, flip: false});
-	pieces.push({src: 'loader/fish.webp', x: S / 2, y: S / 2 + S * 0.07, w: S * 0.46, r: 8, flip: true});
+	pieces.push({src: 'loader/fish.webp', x: S / 2, y: S / 2 - S * 0.065, w: S * 0.4, r: 8, flip: false});
+	pieces.push({src: 'loader/fish.webp', x: S / 2, y: S / 2 + S * 0.065, w: S * 0.4, r: 8, flip: true});
 	const els = pieces.map((p) => {
 		const d = document.createElement('div');
 		d.className = 'fl-piece' + (p.loaf ? '' : ' fish') + (p.flip ? ' flip' : '');
@@ -172,11 +176,9 @@ body { color: white; background-color: black; overflow: hidden; touch-action: no
 		d.style.top = 'calc(' + p.y + ' * var(--u))';
 		d.style.setProperty('--w', 'calc(' + p.w + ' * var(--u))');
 		d.style.setProperty('--r', p.r + 'deg');
-		const shade = document.createElement('i');
 		const im = document.createElement('img');
 		im.src = p.src;
 		im.alt = '';
-		d.appendChild(shade);
 		d.appendChild(im);
 		basket.appendChild(d);
 		return d;
@@ -249,7 +251,7 @@ body { color: white; background-color: black; overflow: hidden; touch-action: no
 </script>
 <script src="index.js"></script>
 <script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","mainPack":"game-71f4dcf3d5076203.pck","experimentalVK":false,"fileSizes":{"game-71f4dcf3d5076203.pck":20679196,"index.wasm":28996398},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","mainPack":"game-979371443549bd71.pck","experimentalVK":false,"fileSizes":{"game-979371443549bd71.pck":20679196,"index.wasm":28996398},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
