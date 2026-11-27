@@ -49,8 +49,11 @@ body { color: white; background-color: black; overflow: hidden; touch-action: no
 	45% { opacity: 1; filter: blur(0) drop-shadow(calc(14 * var(--u)) calc(28 * var(--u)) calc(16 * var(--u)) rgba(20, 10, 4, 0.35)); }
 	72% { transform: translate(-50%, -50%) rotate(var(--r)) scale(calc(0.95 * var(--sx)), 0.95); }
 	100% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r)) scale(var(--sx), 1);
-		filter: blur(0) drop-shadow(calc(6 * var(--u)) calc(12 * var(--u)) calc(9 * var(--u)) rgba(20, 10, 4, 0.7)); }
+		filter: blur(0) drop-shadow(calc(4 * var(--u)) calc(8 * var(--u)) calc(7 * var(--u)) rgba(20, 10, 4, 0.6)); }
 }
+/* the basket wall's shade (0.25.2): inside the rim (radius 0.40 of the basket), over the loaves */
+#fl-shade { left: 10%; top: 10%; width: 80%; height: 80%; border-radius: 50%; pointer-events: none;
+	background: radial-gradient(closest-side, rgba(25, 12, 5, 0) 62%, rgba(25, 12, 5, 0.12) 78%, rgba(25, 12, 5, 0.32) 92%, rgba(25, 12, 5, 0.5) 100%); }
 /* a puff of flour where a loaf lands */
 .fl-flour { position: absolute; width: calc(10 * var(--u)); height: calc(10 * var(--u)); margin: calc(-5 * var(--u)); border-radius: 50%;
 	background: rgba(255, 244, 222, 0.85); animation: fl-flour 0.7s ease-out forwards; }
@@ -72,7 +75,7 @@ body { color: white; background-color: black; overflow: hidden; touch-action: no
 @media (prefers-reduced-motion: reduce) {
 	.fl-piece.in img { animation: fl-fade 0.3s ease forwards; }
 	@keyframes fl-fade { from { opacity: 0; } to { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r)) scale(var(--sx), 1);
-		filter: drop-shadow(calc(6 * var(--u)) calc(12 * var(--u)) calc(9 * var(--u)) rgba(20, 10, 4, 0.7)); } }
+		filter: drop-shadow(calc(4 * var(--u)) calc(8 * var(--u)) calc(7 * var(--u)) rgba(20, 10, 4, 0.6)); } }
 	.fl-flour, .fl-mote { display: none; }
 }
 #status-notice {
@@ -156,16 +159,18 @@ body { color: white; background-color: black; overflow: hidden; touch-action: no
 	}
 
 	// five loaves in a ring inside the basket (top first, clockwise), two fish head to tail on them.
-	// 0.25.1 (Simon: place the loaves better): a little smaller and further apart, each a touch
-	// uneven like real loaves ([angle, ring, size]), and each casts a shadow on what lies below
+	// 0.25.1 (Simon: place the loaves better): each a touch uneven like real loaves ([angle, ring,
+	// size]) and each casts a shadow. 0.25.2 (Simon: they did not lie inside): the basket is seen
+	// straight from above, lined with linen; the loaves lie on the cloth within the rim, and the
+	// wall's shade falls over whatever lies near it
 	const S = 700;
 	const UNEVEN = [[4, 0.02, 0.03], [-3, -0.03, -0.04], [5, 0.03, 0.02], [-4, -0.01, -0.03], [2, 0, 0.04]];
 	const pieces = [];
 	for (let k = 0; k < 5; k++) {
 		const [da, dr, ds] = UNEVEN[k];
 		const th = (-90 + 72 * k + da) * Math.PI / 180;
-		const ring = S * 0.235 * (1 + dr);
-		pieces.push({src: 'loader/loaf.webp', x: S / 2 + Math.cos(th) * ring, y: S / 2 + Math.sin(th) * ring, w: S * 0.285 * (1 + ds), r: -18 + 9 * k, loaf: true});
+		const ring = S * 0.225 * (1 + dr);
+		pieces.push({src: 'loader/loaf.webp', x: S / 2 + Math.cos(th) * ring, y: S / 2 + Math.sin(th) * ring, w: S * 0.29 * (1 + ds), r: -18 + 9 * k, loaf: true});
 	}
 	pieces.push({src: 'loader/fish.webp', x: S / 2, y: S / 2 - S * 0.065, w: S * 0.4, r: 8, flip: false});
 	pieces.push({src: 'loader/fish.webp', x: S / 2, y: S / 2 + S * 0.065, w: S * 0.4, r: 8, flip: true});
@@ -183,6 +188,9 @@ body { color: white; background-color: black; overflow: hidden; touch-action: no
 		basket.appendChild(d);
 		return d;
 	});
+	const shade = document.createElement('div');  // over the pieces: dark at the wall, clear in the middle
+	shade.id = 'fl-shade';
+	basket.appendChild(shade);
 
 	function land(i) {
 		const d = els[i];
@@ -251,7 +259,7 @@ body { color: white; background-color: black; overflow: hidden; touch-action: no
 </script>
 <script src="index.js"></script>
 <script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","mainPack":"game-979371443549bd71.pck","experimentalVK":false,"fileSizes":{"game-979371443549bd71.pck":20679196,"index.wasm":28996398},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","mainPack":"game-9e412af8e2557c58.pck","experimentalVK":false,"fileSizes":{"game-9e412af8e2557c58.pck":20679196,"index.wasm":28996398},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
