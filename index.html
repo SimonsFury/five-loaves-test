@@ -163,14 +163,13 @@ body { color: white; background-color: black; overflow: hidden; touch-action: no
 	// size]) and each casts a shadow. 0.25.2 (Simon: they did not lie inside): the basket is seen
 	// straight from above, lined with linen; the loaves lie on the cloth within the rim, and the
 	// wall's shade falls over whatever lies near it
+	// 0.25.3 (Simon: a clean circle, all the same size, overlapping the same way or not at all): five
+	// equal loaves exactly 72 degrees apart, none touching, each turned with its place like a rosette
 	const S = 700;
-	const UNEVEN = [[4, 0.02, 0.03], [-3, -0.03, -0.04], [5, 0.03, 0.02], [-4, -0.01, -0.03], [2, 0, 0.04]];
 	const pieces = [];
 	for (let k = 0; k < 5; k++) {
-		const [da, dr, ds] = UNEVEN[k];
-		const th = (-90 + 72 * k + da) * Math.PI / 180;
-		const ring = S * 0.225 * (1 + dr);
-		pieces.push({src: 'loader/loaf.webp', x: S / 2 + Math.cos(th) * ring, y: S / 2 + Math.sin(th) * ring, w: S * 0.29 * (1 + ds), r: -18 + 9 * k, loaf: true});
+		const th = (-90 + 72 * k) * Math.PI / 180;
+		pieces.push({src: 'loader/loaf.webp', x: S / 2 + Math.cos(th) * S * 0.24, y: S / 2 + Math.sin(th) * S * 0.24, w: S * 0.27, r: 72 * k, loaf: true});
 	}
 	pieces.push({src: 'loader/fish.webp', x: S / 2, y: S / 2 - S * 0.065, w: S * 0.4, r: 8, flip: false});
 	pieces.push({src: 'loader/fish.webp', x: S / 2, y: S / 2 + S * 0.065, w: S * 0.4, r: 8, flip: true});
@@ -259,7 +258,7 @@ body { color: white; background-color: black; overflow: hidden; touch-action: no
 </script>
 <script src="index.js"></script>
 <script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","mainPack":"game-9e412af8e2557c58.pck","experimentalVK":false,"fileSizes":{"game-9e412af8e2557c58.pck":20679196,"index.wasm":28996398},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","mainPack":"game-9c3d4872a84bc54c.pck","experimentalVK":false,"fileSizes":{"game-9c3d4872a84bc54c.pck":20679196,"index.wasm":28996398},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
